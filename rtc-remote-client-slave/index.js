@@ -20,7 +20,7 @@ var myPeerConnection = new RTCPeerConnection(configuration);
 // 시그널링 서버 -> Socket.io
 var socket;
 var room;
-socket = io.connect('http://172.30.1.29:5004');
+socket = io.connect('http://13.125.231.93:5004');
 
 // Socket Room Join
 function submitRoomConnection(){
