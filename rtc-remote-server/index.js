@@ -85,7 +85,9 @@ io.on('connection', (socket) => {
         socket.broadcast.to(room).emit('rtc-message', data);
     })
 
-
-
+    socket.on("remote-event", (data) => {
+        var room = JSON.parse(data).roomId;
+        socket.broadcast.to(room).emit('remote-event', data);
+    })
    
 })

@@ -1,18 +1,14 @@
 const io = require('socket.io-client');
-
-const ipcRenderer = require('electron').ipcRenderer;
 const { desktopCapturer } = require("electron");
 
-var socket;
-var room;
 
 
 
-// 미디어와 관련된 변수를 선언해요 myFace는 element를 받고 myStream엔 영상 내용을 담을거에요
+// 미디어와 관련된 변수를 선언
 var myFace = document.getElementById("myFace");
-var myStream;
+var myStream;   //영상 스트림
 
-// 먼저 RTC객체를 만들어요 구글 stun 서버로 부터 나의 정보를 가져올게요
+// RTC Connection : Google stun 서버로 부터 나의 Peer Connection 정보를 가져옴
 var configuration = {
     "iceServers" : [{
         "url" : "stun:stun.l.google.com:19302"
@@ -21,8 +17,12 @@ var configuration = {
 var myPeerConnection = new RTCPeerConnection(configuration);
 
 
+// 시그널링 서버 -> Socket.io
+var socket;
+var room;
 socket = io.connect('http://172.30.1.29:5004');
 
+// Socket Room Join
 function submitRoomConnection(){
     room = document.getElementById('roomId').value;
     if(room && room != null){
@@ -34,17 +34,31 @@ function submitRoomConnection(){
     }
 }
 
+// Room Join -> 이미 접속한 Slave 존재
 socket.on('room-full', async (message) => {
     alert("입장 인원 초과");
     location.reload(true);
 })
+
+socket.on('remote-event', async (message) => {
+
+    // var content = JSON.parse(message);
+    // robot.moveMouse(content.x, content.y);
+    // console.log(content.x, content.y);
+    // if(content.type = 'mousedown'){
+    //     robot.mouseToggle("down", "left");
+    // }
+    // else if(content.type = 'mouseup'){
+    //     robot.mouseToggle("up", "left");   
+    // }
+})
+
 socket.on('rtc-message', async (message) => {
 
     var content = JSON.parse(message);
-    console.log("메세지가 왔어요" + content);
     // 누군가가 오퍼를 보냄
     if (content.event == "offer") {
-        console.log("오퍼가 왔어요", content.data);
+        console.log("Receive Offer", content.data);
         var offer = content.data;
         myPeerConnection.setRemoteDescription(offer);   //Offer -> Remote Description 등록 
 
@@ -55,7 +69,7 @@ socket.on('rtc-message', async (message) => {
         );
         var answer = await myPeerConnection.createAnswer();
         myPeerConnection.setLocalDescription(answer);   //LocalDescription 설정 -> onicecandidate 트리거 -> Candidate를 Socket에 Answer로 보냄
-        console.log("앤서를 보낼게요");
+        console.log("Send Answer");
         send({
             event: "answer",
             data: answer
@@ -63,20 +77,19 @@ socket.on('rtc-message', async (message) => {
     } 
     // 오퍼를 보내고 나서 응답이 옴 
     else if (content.event == "answer") {
-        console.log("앤서가 왔어요");
+        console.log("Receive Answer");
         answer = content.data;
         myPeerConnection.setRemoteDescription(answer);
     } 
     
     else if (content.event == "candidate") {
-        console.log("캔디데이트가 왔어요");
-        // 이 메서드를 통해 리모트 디스크립션에 설정되어있는 피어와의 연결방식을 결정해요
+        console.log("Receive Candidate");
         console.log(content.data);
-        myPeerConnection.addIceCandidate(content.data);
+        myPeerConnection.addIceCandidate(content.data);  // Remote Description에 설정되어있는 Feer와의 연결방식을 결정
     }
 })
 
-// 앞으로 소켓으로 메세지를 보낼 땐 이 함수를 쓸 생각이에요
+// 시그널링 서버에 메세지를 보내는 메서드
 async function send(message) {
     const data = {
         roomId: room,
@@ -88,45 +101,41 @@ async function send(message) {
 
 
 
-// 내가 나의 캔디데이트(너가 나를 연결하는 방법들의 후보)를 등록하면(즉 로컬디스크립션을 설정하면)
-// 트리거 되는 메서드에요
+// Local Candidate(상대가 나를 연결하는 방법들의 후보)를 등록하면(로컬디스크립션을 설정) 트리거되는 메서드
 myPeerConnection.onicecandidate = function(event) {
-    console.log("나의 캔디데이트를 보낼게요");
+    console.log("Send Candidate");
     send({
         event: "candidate",
         data: event.candidate
     })
 }
-// 연결이 되서 피어의 스트림이 내 RTC객체에 등록되면 시작되는 메서드에요
+// Connection이 이루어져 피어의 스트림이 내 RTC에 등록되면 시작되는 메서드
 myPeerConnection.addEventListener("addstream", handleAddStream);
 
 function handleAddStream(data) {
-    console.log("스트리밍 데이터를 받아왔어요");
+    console.log("Receive Streaming Data!");
 
     var peerVideo = document.getElementById("peerVideo");
     peerVideo.srcObject = data.stream;
 }
 
 
-// '오퍼를 생성해요'라는 버튼을 눌렀을 때 이 메서드가 실행되요
+// Offer 생성
 async function createOffer() {
-    console.log("오퍼를 보내볼게요");
-
-    //일단 카메라를 킬게요 키면서 myStream에도 미디어 정보를 담아와요
+    //myStream에 미디어 정보 저장
     await getMedia();
 
-    // getMedia에서 가져온 audio, video 트랙을 myPeerConnection에 등록해요
+    // getMedia에서 가져온 트랙을 myPeerConnection에 등록
     myStream.getTracks().forEach((track) => myPeerConnection.addTrack(track, myStream));
     
-    // RTC객체도 만들었고 나의 미디어도 RTC객체에 담았으니 오퍼를 생성해볼게요
+    // RTC Peer Connection으로 Offer 생성
     var offer = await myPeerConnection.createOffer();
-    console.log("오퍼를 전송시작해요!")
-    // 이제 send함수를 통해 소켓으로 나의 offer를 전송해 볼게요
+    // 시그널링 서버로 Offer 전송
     await send({
         event: "offer",
         data: offer
     })
-    console.log("오퍼 전송을 완료했어요")
+    console.log("Send Offer");
     myPeerConnection.setLocalDescription(offer);
 }
 
@@ -136,10 +145,9 @@ const myCustomGetDisplayMedia = async () => {
       types: ["screen"],
     });
   
-    // you should create some kind of UI to prompt the user
-    // to select the correct source like Google Chrome does
-    const selectedSource = sources[0]; // this is just for testing purposes
+    const selectedSource = sources[0]; //1번째 메인모니터
   
+    console.log(sources);
     return selectedSource;
 }
 
@@ -153,6 +161,11 @@ navigator.mediaDevices.getDisplayMedia = async () => {
         mandatory: {
           chromeMediaSource: "desktop",
           chromeMediaSourceId: selectedSource.id,
+          minWidth: 1280,
+          maxWidth: 1280,
+          minHeight: 720,
+          maxHeight: 720,
+          
         },
       },
     });
@@ -160,28 +173,22 @@ navigator.mediaDevices.getDisplayMedia = async () => {
     return stream;
 };
 
-//미디어 내용을 받기 시작하는 함수에요
+//미디어 Stream을 얻어냄
 async function getMedia() {
     try {
-        // myStream = await navigator.mediaDevices.getUserMedia({
-        //     audio: true,
-        //     video: true,
-            
-        // });
+
         myStream = await navigator.mediaDevices.getDisplayMedia({
-            video: { displaySurface: 'monitor' } 
+            video: { 
+                displaySurface: 'monitor' 
+            } 
         })
         console.log(myStream)
 
-        // let displaySurface = myStream.getVideoTracks()[0].getSettings().displaySurface;
-        // if (displaySurface !== 'monitor') {
-        //     throw 'Selection of entire screen mandatory!';
-        // }
 
         console.log(myStream);
         myFace.srcObject = myStream;
-        // myMedia.srcObject = myMediaStream;
+
     } catch (e) {
-        console.log("미디어를 가져오는 중 에러가 발생했어요", e.message);
+        console.log("Error occured to getMedia ", e.message);
     }
 }        
