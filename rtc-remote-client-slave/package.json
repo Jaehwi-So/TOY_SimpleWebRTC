@@ -1,0 +1,27 @@
+{
+  "name": "remote-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "build": "npx electron-rebuild -f -m node_modules/robotjs",
+    "start": "npm run build && ./node_modules/.bin/electron .",
+    "export": "npm run build && CSC_IDENTITY_AUTO_DISCOVERY=false ./node_modules/.bin/electron-builder --mac"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron-log": "^5.0.0",
+    "mathjs": "^8.1.0",
+    "node-gyp": "^7.0.0",
+    "robotjs": "^0.6.0",
+    "screenshot-desktop": "^1.12.3",
+    "sharp": "^0.32.6",
+    "socket.io-client": "^3.0.4",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "electron": "8.5.2",
+    "electron-builder": "23.0.2"
+  }
+}

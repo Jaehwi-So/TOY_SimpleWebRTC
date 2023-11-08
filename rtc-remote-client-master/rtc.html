@@ -12,7 +12,7 @@
     <video id="myFace" playsinline autoplay width="300" height="300"></video>
     <br>
     <div>Peer Face</div>
-    <video id="peerVideo" playsinline autoplay width="300" height="300"></video>
+    <video id="peerVideo" playsinline autoplay width="1920" height="1080"></video>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" crossorigin="anonymous"></script>
     <script>
 
@@ -63,6 +63,7 @@
                         myPeerConnection.addTrack(track, myStream)
                     );
                     var answer = await myPeerConnection.createAnswer();
+                    console.log("offer")
                     myPeerConnection.setLocalDescription(answer);   //LocalDescription 설정 -> onicecandidate 트리거 -> Candidate를 Socket에 Answer로 보냄
                     console.log("앤서를 보낼게요");
                     send({
@@ -74,12 +75,14 @@
                 else if (content.event == "answer") {
                     console.log("앤서가 왔어요");
                     answer = content.data;
+                    console.log("answer")
                     myPeerConnection.setRemoteDescription(answer);
                 } 
                 
                 else if (content.event == "candidate") {
                     console.log("캔디데이트가 왔어요");
                     // 이 메서드를 통해 리모트 디스크립션에 설정되어있는 피어와의 연결방식을 결정해요
+                    console.log("candidate")
                     myPeerConnection.addIceCandidate(content.data);
                 }
             })
@@ -91,7 +94,6 @@
                 roomId: room,
                 ...message
             }
-            console.log(data);
             socket.emit("rtc-message", JSON.stringify(data));
 
         }
@@ -102,6 +104,7 @@
         // 트리거 되는 메서드에요
         myPeerConnection.onicecandidate = function(event) {
             console.log("나의 캔디데이트를 보낼게요");
+            console.log(event.candidate);
             send({
                 event: "candidate",
                 data: event.candidate
@@ -138,6 +141,7 @@
             })
             console.log("오퍼 전송을 완료했어요")
             myPeerConnection.setLocalDescription(offer);
+            console.log("Offer to Candidate")
         }
 
 
