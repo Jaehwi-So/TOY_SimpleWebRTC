@@ -20,14 +20,17 @@ var myPeerConnection = new RTCPeerConnection(configuration);
 // 시그널링 서버 -> Socket.io
 var socket;
 var room;
-socket = io.connect('http://13.125.231.93:5004');
+
+/* Insert Your Signaling Server */
+// socket = io.connect('http://13.125.231.93:5004'); 
+socket = io.connect('http://127.0.0.1:5004'); 
 
 // Socket Room Join
 function submitRoomConnection(){
     room = document.getElementById('roomId').value;
     if(room && room != null){
         socket.emit("join-slave", room);
-        console.log(room)
+        document.getElementById('status').innerHTML = "ROOM " + room + " 접속상태"
     }
     else{
         console.log("Empty")
@@ -40,18 +43,6 @@ socket.on('room-full', async (message) => {
     location.reload(true);
 })
 
-socket.on('remote-event', async (message) => {
-
-    // var content = JSON.parse(message);
-    // robot.moveMouse(content.x, content.y);
-    // console.log(content.x, content.y);
-    // if(content.type = 'mousedown'){
-    //     robot.mouseToggle("down", "left");
-    // }
-    // else if(content.type = 'mouseup'){
-    //     robot.mouseToggle("up", "left");   
-    // }
-})
 
 socket.on('rtc-message', async (message) => {
 

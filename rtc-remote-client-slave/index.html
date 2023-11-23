@@ -8,11 +8,12 @@
 <body>
     <h1>Slave RTC Client</h1>
     <!-- <button onclick="createOffer();">Connection</button><br> -->
-    <p>Connection server</p>
+    <span>Connection server</span>
     <input type="text" id="roomId" placeholder="Room ID">
-    <button onclick="submitRoomConnection()">Submit</button>
-
-    <button onclick="createOffer();">Connection</button><br>
+    <button onclick="submitRoomConnection()">Connection</button>
+    <span id="status">미접속</span>
+    <br>
+    <button onclick="createOffer();">Start Streaming</button><br>
     <div>My Face</div>
     <video id="myFace" playsinline autoplay width="300" height="300"></video>
     <br>

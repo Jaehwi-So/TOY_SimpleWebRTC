@@ -44,7 +44,9 @@
             }
 
             // 시그널링 서버 -> Socket.io
-            socket = io.connect('http://13.125.231.93:5004');
+            /* Insert Your Signaling Server */
+            // socket = io.connect('http://13.125.231.93:5004');
+            socket = io.connect('http://127.0.0.1:5004'); 
 
             // Socket Room Join
             socket.emit("join-master", room);
@@ -169,41 +171,6 @@
                 console.log("미디어를 가져오는 중 에러가 발생했어요");
             }
         }        
-
-        //mousedown mouseup
-        // const element = document.getElementById('peerZone'); // 또는 원하는 방식으로 요소를 선택
-        // element.addEventListener('mousedown', function(event) {
-        //     const div = document.getElementById('peerZone');
-        //     const divX = event.clientX - div.getBoundingClientRect().left; // X coordinate relative to the div
-        //     const divY = event.clientY - div.getBoundingClientRect().top; // Y coordinate relative to the div
-        //     const x = divX * 1.5; 
-        //     const y = divY * 1.5; 
-        //     console.log('Mousedown ' + x + " " + y);
-        //     const obj = {
-        //         x, y,
-        //         roomId: room,
-        //         type: "mousedown"
-        //     }
-        //     socket.emit("remote-event", JSON.stringify(obj));
-        // });
-
-        // element.addEventListener('mouseup', function(event) {
-        //     const div = document.getElementById('peerZone');
-        //     const divX = event.clientX - div.getBoundingClientRect().left; // X coordinate relative to the div
-        //     const divY = event.clientY - div.getBoundingClientRect().top; // Y coordinate relative to the div
-        //     const x = divX * 1.5; 
-        //     const y = divY * 1.5; 
-        //     console.log('MouseUp' + x + " " + y);
-        //     const obj = {
-        //         x, y,
-        //         roomId: room,
-        //         type: "mouseup"
-        //     }
-        //     socket.emit("remote-event", JSON.stringify(obj));
-        // });
-
-        
-
     </script>
 </body>
 </html>
