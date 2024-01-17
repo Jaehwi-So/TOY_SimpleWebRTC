@@ -25,6 +25,7 @@ var io = SocketIO(server, {
 const maxClientsPerRoom = 2;
 const roomMasterCounts = {}; // 방(Room)별 클라이언트 수를 추적하는 객체
 const roomSlaveCounts = {};
+const roomCounts = {};
 
 io.on('connection', (socket) => {
 
@@ -75,6 +76,33 @@ io.on('connection', (socket) => {
         socket.on('disconnect', () => {
             roomSlaveCounts[roomId]--;
             console.log("disconnect, count:" + roomSlaveCounts[roomId]);
+        });
+    })
+
+
+
+    socket.on("join", (roomId) => {
+        // 클라이언트가 Room에 조인하려고 할 때, 클라이언트 수를 확인하고 제한.
+        if (roomCounts[roomId] === undefined) {
+            roomCounts[roomId] = 1;
+        } 
+        else if (roomCounts[roomId] < maxClientsPerRoom) {
+            roomCounts[roomId]++;
+        } 
+        else {
+            // 클라이언트 수가 제한을 초과하면 클라이언트를 Room에 입장시키지 않음.
+            socket.emit('room-full', roomId);
+            console.log("room full" + roomCounts[roomId]);
+            return;
+        }
+        socket.join(roomId);
+        console.log("User joined in a room : " + roomId + " count:" + roomCounts[roomId]);
+
+
+        // 클라이언트가 Room을 떠날 때 클라이언트 수를 업데이트
+        socket.on('disconnect', () => {
+            roomCounts[roomId]--;
+            console.log("disconnect, count:" + roomCounts[roomId]);
         });
     })
 

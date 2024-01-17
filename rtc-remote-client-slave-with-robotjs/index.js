@@ -1,5 +1,5 @@
 const io = require('socket.io-client');
-const { desktopCapturer } = require("electron");
+// const { desktopCapturer } = require("electron");
 
 
 
@@ -22,8 +22,8 @@ var socket;
 var room;
 
 /* Insert Your Signaling Server */
-// socket = io.connect('http://13.125.231.93:5004'); 
-socket = io.connect('http://127.0.0.1:5004'); 
+socket = io.connect('http://13.125.231.93:5004'); 
+// socket = io.connect('http://127.0.0.1:5004'); 
 
 // Socket Room Join
 function submitRoomConnection(){
@@ -76,7 +76,7 @@ socket.on('rtc-message', async (message) => {
     else if (content.event == "candidate") {
         console.log("Receive Candidate");
         console.log(content.data);
-        myPeerConnection.addIceCandidate(content.data);  // Remote Description에 설정되어있는 Peer와의 연결방식을 결정
+        myPeerConnection.addIceCandidate(content.data);  // Remote Description에 설정되어있는 Feer와의 연결방식을 결정
     }
 })
 

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    
+    <title>Web RTC</title>
+</head>
+<body>
+    <h1>Slave RTC Client</h1>
+    <!-- <button onclick="createOffer();">Connection</button><br> -->
+    <span>Connection server</span>
+    <input type="text" id="roomId" placeholder="Room ID">
+    <button onclick="submitRoomConnection()">Connection</button>
+    <span id="status">미접속</span>
+    <br>
+    <button onclick="createOffer();">Start Streaming</button><br>
+    <div>My Face</div>
+    <video id="myFace" playsinline autoplay width="300" height="300"></video>
+    <br>
+    <div>Peer Face</div>
+    <video id="peerVideo" playsinline autoplay width="300" height="300"></video>
+    <script src="index.js"></script>
+</body>
+</html>
