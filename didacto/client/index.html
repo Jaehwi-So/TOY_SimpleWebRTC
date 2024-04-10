@@ -51,7 +51,7 @@
 
 
             // Socket Room Join
-            socket.emit("join-master", room);
+            socket.emit("join-student", room);
 
             // Room Join -> 이미 접속한 Master 존재
             socket.on('room-full', async (message) => {
