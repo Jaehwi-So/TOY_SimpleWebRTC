@@ -80,7 +80,7 @@ io.on('connection', (socket) => {
 
     socket.on("rtc-message", (data) => {
         var room = JSON.parse(data).roomId;
-        console.log(data);
+        console.log(data.event);
         socket.broadcast.to(room).emit('rtc-message', data);
     })
 
