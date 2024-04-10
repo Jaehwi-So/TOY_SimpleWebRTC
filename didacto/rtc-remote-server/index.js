@@ -27,7 +27,7 @@ const roomMasterCounts = {}; // 방(Room)별 클라이언트 수를 추적하는
 const roomSlaveCounts = {};
 
 io.on('connection', (socket) => {
-    socket.on("join-tutor", (roomId) => {
+    socket.on("join-master", (roomId) => {
         // 클라이언트가 방(Room)에 조인하려고 할 때, 클라이언트 수를 확인하고 제한합니다.
         if (roomMasterCounts[roomId] === undefined) {
             roomMasterCounts[roomId] = 1;
@@ -80,6 +80,7 @@ io.on('connection', (socket) => {
 
     socket.on("rtc-message", (data) => {
         var room = JSON.parse(data).roomId;
+        console.log(data);
         socket.broadcast.to(room).emit('rtc-message', data);
     })
 
