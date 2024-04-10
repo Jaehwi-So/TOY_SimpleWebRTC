@@ -109,14 +109,14 @@ io.on('connection', (socket) => {
 
 
     socket.on("rtc-message", (data) => {
-        console.log(data.event);
         var room = JSON.parse(data).roomId;
+        console.log(JSON.parse(data).event);
         socket.broadcast.to(room).emit('rtc-message', data);
     })
 
     socket.on("remote-event", (data) => {
-        console.log(data);
         var room = JSON.parse(data).roomId;
+        console.log(JSON.parse(data).event);
         socket.broadcast.to(room).emit('remote-event', data);
     })
    
