@@ -43,8 +43,8 @@ io.on('connection', (socket) => {
         //     console.log("room full" + roomMasterCounts[roomId]);
         //     return;
         // }
-        // socket.join(roomId);
-        // console.log("User joined in a room : " + roomId + " count:" + roomMasterCounts[roomId]);
+        socket.join(roomId);
+        console.log("User joined in a room : " + roomId + " count:" + roomMasterCounts[roomId]);
 
 
         // // 클라이언트가 방(Room)을 떠날 때 클라이언트 수를 업데이트합니다.
@@ -69,8 +69,8 @@ io.on('connection', (socket) => {
         //     console.log("room full" + roomSlaveCounts[roomId]);
         //     return;
         // }
-        // socket.join(roomId);
-        // console.log("slave User joined in a room : " + roomId + " count:" + roomSlaveCounts[roomId]);
+        socket.join(roomId);
+        console.log("slave User joined in a room : " + roomId + " count:" + roomSlaveCounts[roomId]);
 
 
         // // 클라이언트가 방(Room)을 떠날 때 클라이언트 수를 업데이트합니다.
