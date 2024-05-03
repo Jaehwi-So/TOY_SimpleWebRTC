@@ -31,79 +31,53 @@ io.on('connection', (socket) => {
 
     socket.on("join-master", (roomId) => {
         // 클라이언트가 방(Room)에 조인하려고 할 때, 클라이언트 수를 확인하고 제한합니다.
-        if (roomMasterCounts[roomId] === undefined) {
-            roomMasterCounts[roomId] = 1;
-        } 
-        else if (roomMasterCounts[roomId] < maxClientsPerRoom) {
-            roomMasterCounts[roomId]++;
-        } 
-        else {
-            // 클라이언트 수가 제한을 초과하면 클라이언트를 방(Room)에 입장시키지 않습니다.
-            socket.broadcast.to(roomId).emit('room-full', roomId);
-            console.log("room full" + roomMasterCounts[roomId]);
-            return;
-        }
-        socket.join(roomId);
-        console.log("User joined in a room : " + roomId + " count:" + roomMasterCounts[roomId]);
+        // if (roomMasterCounts[roomId] === undefined) {
+        //     roomMasterCounts[roomId] = 1;
+        // } 
+        // else if (roomMasterCounts[roomId] < maxClientsPerRoom) {
+        //     roomMasterCounts[roomId]++;
+        // } 
+        // else {
+        //     // 클라이언트 수가 제한을 초과하면 클라이언트를 방(Room)에 입장시키지 않습니다.
+        //     socket.broadcast.to(roomId).emit('room-full', roomId);
+        //     console.log("room full" + roomMasterCounts[roomId]);
+        //     return;
+        // }
+        // socket.join(roomId);
+        // console.log("User joined in a room : " + roomId + " count:" + roomMasterCounts[roomId]);
 
 
-        // 클라이언트가 방(Room)을 떠날 때 클라이언트 수를 업데이트합니다.
-        socket.on('disconnect', () => {
-            roomMasterCounts[roomId]--;
-            console.log("disconnect, count:" + roomMasterCounts[roomId]);
-        });
+        // // 클라이언트가 방(Room)을 떠날 때 클라이언트 수를 업데이트합니다.
+        // socket.on('disconnect', () => {
+        //     // roomMasterCounts[roomId]--;
+        //     // console.log("disconnect, count:" + roomMasterCounts[roomId]);
+        // });
     })
 
     socket.on("join-slave", (roomId) => {
-        // 클라이언트가 방(Room)에 조인하려고 할 때, 클라이언트 수를 확인하고 제한합니다.
-        if (roomSlaveCounts[roomId] === undefined) {
-            roomSlaveCounts[roomId] = 1;
-        } 
-        else if (roomSlaveCounts[roomId] < maxClientsPerRoom) {
-            roomSlaveCounts[roomId]++;
-        } 
-        else {
-            // 클라이언트 수가 제한을 초과하면 클라이언트를 방(Room)에 입장시키지 않습니다.
-            socket.broadcast.to(roomId).emit('room-full', roomId);
-            console.log("room full" + roomSlaveCounts[roomId]);
-            return;
-        }
-        socket.join(roomId);
-        console.log("slave User joined in a room : " + roomId + " count:" + roomSlaveCounts[roomId]);
+        
+        // // 클라이언트가 방(Room)에 조인하려고 할 때, 클라이언트 수를 확인하고 제한합니다.
+        // if (roomSlaveCounts[roomId] === undefined) {
+        //     roomSlaveCounts[roomId] = 1;
+        // } 
+        // else if (roomSlaveCounts[roomId] < maxClientsPerRoom) {
+        //     roomSlaveCounts[roomId]++;
+        // } 
+        // else {
+        //     // 클라이언트 수가 제한을 초과하면 클라이언트를 방(Room)에 입장시키지 않습니다.
+        //     socket.broadcast.to(roomId).emit('room-full', roomId);
+        //     console.log("room full" + roomSlaveCounts[roomId]);
+        //     return;
+        // }
+        // socket.join(roomId);
+        // console.log("slave User joined in a room : " + roomId + " count:" + roomSlaveCounts[roomId]);
 
 
-        // 클라이언트가 방(Room)을 떠날 때 클라이언트 수를 업데이트합니다.
-        socket.on('disconnect', () => {
-            roomSlaveCounts[roomId]--;
-            console.log("disconnect, count:" + roomSlaveCounts[roomId]);
-        });
-    })
-
-
-
-    socket.on("join", (roomId) => {
-        // 클라이언트가 Room에 조인하려고 할 때, 클라이언트 수를 확인하고 제한.
-        if (roomCounts[roomId] === undefined) {
-            roomCounts[roomId] = 1;
-        } 
-        else if (roomCounts[roomId] < maxClientsPerRoom) {
-            roomCounts[roomId]++;
-        } 
-        else {
-            // 클라이언트 수가 제한을 초과하면 클라이언트를 Room에 입장시키지 않음.
-            socket.emit('room-full', roomId);
-            console.log("room full" + roomCounts[roomId]);
-            return;
-        }
-        socket.join(roomId);
-        console.log("User joined in a room : " + roomId + " count:" + roomCounts[roomId]);
-
-
-        // 클라이언트가 Room을 떠날 때 클라이언트 수를 업데이트
-        socket.on('disconnect', () => {
-            roomCounts[roomId]--;
-            console.log("disconnect, count:" + roomCounts[roomId]);
-        });
+        // // 클라이언트가 방(Room)을 떠날 때 클라이언트 수를 업데이트합니다.
+        // socket.on('disconnect', () => {
+        //     // roomSlaveCounts[roomId]--;
+        //     // console.log("disconnect, count:" + roomSlaveCounts[roomId]);
+        // });
     })
 
 
